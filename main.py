@@ -3,6 +3,7 @@ import httpx
 import os
 from typing import Dict, Optional, Any
 from dotenv import load_dotenv
+import logging
 
 # Load environment variables from .env file if available
 # This allows fallback to .env but prioritizes environment variables
@@ -19,7 +20,7 @@ if not NOTION_API_KEY:
 
 # Create MCP server
 mcp = FastMCP("Notion Explorer", dependencies=["httpx", "python-dotenv"])
-
+logger = logging.getLogger(__name__)
 
 # Function to check API key on each request
 def check_api_key(ctx: Context) -> None:
@@ -133,6 +134,7 @@ async def search_notion_pages(
 
 @mcp.tool()
 async def get_page_content(page_id: str, ctx: Context = None) -> str:
+    logger.info("get_page_content", page_id)
     # Check for API key
     check_api_key(ctx)
     """
@@ -509,4 +511,7 @@ async def get_block_children(block_id: str, ctx: Context = None) -> str:
 
 
 if __name__ == "__main__":
+    # TODO: logging is not working
+    # TODO: running it with `python main.py` doesn't work, get's stuck, neither with `uv run main.py`
+    # only runs when called from the client, either the inspector or claude desktop
     mcp.run()
